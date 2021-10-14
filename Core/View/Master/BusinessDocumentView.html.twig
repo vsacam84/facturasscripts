@@ -55,7 +55,7 @@
     <input type="hidden" name="code" value="{{ thisView.model.primaryColumnValue() }}"/>
     <input type="hidden" name="{{ thisView.model.primaryColumn() }}" value="{{ thisView.model.primaryColumnValue() }}"/>
     <input type="hidden" name="idestado" value="{{ thisView.model.idestado }}" id="doc_idestado"/>
-    <input type="hidden" name="multireqtoken" value="{{ fsc.multiRequestProtection.newToken() }}"/>
+    <input type="hidden" name="multireqtoken" value="{{ fsc.multiRequestProtection.newToken(fsc.user.logkey) }}"/>
     <div class="{{ currentView.settings.card ? '' : 'container-fluid' }}">
         <div class="form-row">
             {% if thisView.model.subjectColumn() == 'codcliente' %}
@@ -125,14 +125,6 @@
                     {% endif %}
                 </p>
             </div>
-            {% if fsc.showDocSubType %}
-                {{ _self.customSelect('doc_codsubtipodoc', 'codsubtipodoc', thisView.model.codsubtipodoc,
-                    thisView.getSelectValues('BusinessDocSubType'), true, i18n.trans('doc-subtype')) }}
-            {% endif %}
-            {% if fsc.showDocOperation %}
-                {{ _self.customSelect('doc_codoperaciondoc', 'codoperaciondoc', thisView.model.codoperaciondoc,
-                    thisView.getSelectValues('BusinessDocTypeOperation'), true, i18n.trans('doc-operation')) }}
-            {% endif %}
             {{ _self.customInput('doc_netosindto', 'netosindto', thisView.model.netosindto, 'text', '',
                 {class: 'form-control', disabled: ''}, i18n.trans('subtotal')) }}
             {% if thisView.model.editable %}

@@ -45,7 +45,7 @@ class EditSettings extends PanelController
         $data = parent::getPageData();
         $data['menu'] = 'admin';
         $data['title'] = 'control-panel';
-        $data['icon'] = 'fas fa-cogs';
+        $data['icon'] = 'fas fa-tools';
         return $data;
     }
 
@@ -221,12 +221,10 @@ class EditSettings extends PanelController
      * 
      * @param string $viewName
      */
-    protected function createViewsIdFiscal(string $viewName = 'ListIdentificadorFiscal')
+    protected function createViewsIdFiscal(string $viewName = 'EditIdentificadorFiscal')
     {
-        $this->addListView($viewName, 'IdentificadorFiscal', 'fiscal-id', 'far fa-id-card');
-        $this->views[$viewName]->addSearchFields(['tipoidfiscal']);
-        $this->views[$viewName]->addOrderBy(['codeid'], 'code');
-        $this->views[$viewName]->addOrderBy(['tipoidfiscal'], 'name', 1);
+        $this->addEditListView($viewName, 'IdentificadorFiscal', 'fiscal-id', 'far fa-id-card');
+        $this->views[$viewName]->setInLine(true);
     }
 
     /**
@@ -340,7 +338,7 @@ class EditSettings extends PanelController
                     $this->toolBox()->i18nLog()->notice('mail-test-ok');
                     break;
                 }
-                $this->toolBox()->i18nLog()->error('mail-test-error');
+                $this->toolBox()->i18nLog()->warning('mail-test-error');
                 break;
         }
     }
@@ -373,7 +371,7 @@ class EditSettings extends PanelController
                 }
                 break;
 
-            case 'ListIdentificadorFiscal':
+            case 'EditIdentificadorFiscal':
                 $view->loadData();
                 break;
 
@@ -408,7 +406,7 @@ class EditSettings extends PanelController
         $methods = $this->codeModel->all('formaspago', 'codpago', 'descripcion', false, $where);
 
         $columnPayment = $this->views[$viewName]->columnForName('payment-method');
-        if ($columnPayment) {
+        if ($columnPayment && $columnPayment->widget->getType() === 'select') {
             $columnPayment->widget->setValuesFromCodeModel($methods);
         }
     }
@@ -424,7 +422,7 @@ class EditSettings extends PanelController
         $almacenes = $this->codeModel->all('almacenes', 'codalmacen', 'nombre', false, $where);
 
         $columnWarehouse = $this->views[$viewName]->columnForName('warehouse');
-        if ($columnWarehouse) {
+        if ($columnWarehouse && $columnWarehouse->widget->getType() === 'select') {
             $columnWarehouse->widget->setValuesFromCodeModel($almacenes);
         }
     }

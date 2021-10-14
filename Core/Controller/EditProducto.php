@@ -141,7 +141,7 @@ class EditProducto extends EditController
         $values = $this->codeModel->all('AtributoValor', 'id', '');
         foreach (['attribute-value-1', 'attribute-value-2', 'attribute-value-3', 'attribute-value-4'] as $colName) {
             $column = $this->views[$viewName]->columnForName($colName);
-            if ($column) {
+            if ($column && $column->widget->getType() === 'select') {
                 $column->widget->setValuesFromCodeModel($values);
             }
         }
@@ -151,7 +151,7 @@ class EditProducto extends EditController
      *
      * @param string $viewName
      */
-    protected function loadCustomStockWidget(string $viewName)
+    protected function loadCustomReferenceWidget(string $viewName)
     {
         $references = [];
         $idproducto = $this->getViewModelValue('EditProducto', 'idproducto');
@@ -161,7 +161,7 @@ class EditProducto extends EditController
         }
 
         $column = $this->views[$viewName]->columnForName('reference');
-        if ($column) {
+        if ($column && $column->widget->getType() === 'select') {
             $column->widget->setValuesFromArray($references, false);
         }
     }
@@ -175,17 +175,17 @@ class EditProducto extends EditController
     protected function loadData($viewName, $view)
     {
         $idproducto = $this->getViewModelValue('EditProducto', 'idproducto');
-        $referencia = $this->getViewModelValue('EditProducto', 'referencia');
         $where = [new DataBaseWhere('idproducto', $idproducto)];
 
         switch ($viewName) {
-            case 'EditProducto':
+            case $this->getMainViewName():
                 parent::loadData($viewName, $view);
+                $this->loadCustomReferenceWidget('EditProductoProveedor');
                 if ($view->model->nostock) {
                     $this->setSettings('EditStock', 'active', false);
-                } else {
-                    $this->loadCustomStockWidget('EditStock');
+                    break;
                 }
+                $this->loadCustomReferenceWidget('EditStock');
                 break;
 
             case 'EditVariante':
@@ -198,12 +198,7 @@ class EditProducto extends EditController
                 break;
 
             case 'EditProductoProveedor':
-                $where2 = [
-                    new DataBaseWhere('idproducto', $idproducto),
-                    new DataBaseWhere('referencia', $referencia, '=', 'OR')
-                ];
-                $view->loadData('', $where2, ['id' => 'DESC']);
-                $view->model->referencia = $referencia;
+                $view->loadData('', $where, ['id' => 'DESC']);
                 break;
         }
     }

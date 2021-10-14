@@ -95,10 +95,16 @@ class ListAsiento extends ListController
         $this->addOrderBy($viewName, ['fecha', 'idasiento'], 'date', 2);
         $this->addOrderBy($viewName, ['numero', 'idasiento'], 'number');
         $this->addOrderBy($viewName, ['importe', 'idasiento'], 'amount');
-        $this->addSearchFields($viewName, ['concepto', 'documento', 'numero']);
+        $this->addSearchFields($viewName, ['concepto', 'documento', 'CAST(numero AS char(255))']);
 
         /// filters
         $this->addFilterPeriod($viewName, 'date', 'period', 'fecha');
+
+        $selectExercise = $this->codeModel->all('ejercicios', 'codejercicio', 'nombre');
+        if (\count($selectExercise) > 2) {
+            $this->addFilterSelect($viewName, 'codejercicio', 'exercise', 'codejercicio', $selectExercise);
+        }
+
         $this->addFilterNumber($viewName, 'min-total', 'amount', 'importe', '>=');
         $this->addFilterNumber($viewName, 'max-total', 'amount', 'importe', '<=');
         $this->addFilterCheckbox($viewName, 'editable');
@@ -106,11 +112,6 @@ class ListAsiento extends ListController
         $selectCompany = $this->codeModel->all('empresas', 'idempresa', 'nombrecorto');
         if (\count($selectCompany) > 2) {
             $this->addFilterSelect($viewName, 'idempresa', 'company', 'idempresa', $selectCompany);
-        }
-
-        $selectExercise = $this->codeModel->all('ejercicios', 'codejercicio', 'nombre');
-        if (\count($selectExercise) > 2) {
-            $this->addFilterSelect($viewName, 'codejercicio', 'exercise', 'codejercicio', $selectExercise);
         }
 
         $selectJournals = $this->codeModel->all('diarios', 'iddiario', 'descripcion');
@@ -151,14 +152,14 @@ class ListAsiento extends ListController
     }
 
     /**
-     * 
+     *
      * @param string $viewName
      */
     protected function createViewsNotBalanced(string $viewName = 'ListAsiento-not')
     {
         $idasientos = [];
-        $sql = 'SELECT partidas.idasiento, ABS(SUM(partidas.debe) - SUM(partidas.haber)) AS diff'
-            . ' FROM partidas GROUP BY 1 HAVING diff > 0.001';
+        $sql = 'SELECT partidas.idasiento, ABS(SUM(partidas.debe) - SUM(partidas.haber))'
+            . ' FROM partidas GROUP BY 1 HAVING ABS(SUM(partidas.debe) - SUM(partidas.haber)) > 0.001';
         foreach ($this->dataBase->select($sql) as $row) {
             $idasientos[] = $row['idasiento'];
         }
@@ -168,7 +169,7 @@ class ListAsiento extends ListController
             $this->addOrderBy($viewName, ['fecha', 'idasiento'], 'date', 2);
             $this->addOrderBy($viewName, ['numero', 'idasiento'], 'number');
             $this->addOrderBy($viewName, ['importe', 'idasiento'], 'amount');
-            $this->addSearchFields($viewName, ['concepto', 'documento', 'numero']);
+            $this->addSearchFields($viewName, ['concepto', 'documento', 'CAST(numero AS char(255))']);
 
             /// filter
             $this->addFilterSelectWhere($viewName, 'status', [
@@ -201,7 +202,7 @@ class ListAsiento extends ListController
     }
 
     /**
-     * 
+     *
      * @return bool
      */
     protected function lockEntriesAction()
@@ -242,7 +243,7 @@ class ListAsiento extends ListController
     }
 
     /**
-     * 
+     *
      * @return bool
      */
     protected function renumberAction()

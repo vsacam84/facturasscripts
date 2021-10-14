@@ -153,6 +153,8 @@ class EditProveedor extends ComercialContactController
     {
         $return = parent::editAction();
         if ($return && $this->active === $this->getMainViewName()) {
+            $this->checkSubaccountLength($this->getModel()->codsubcuenta);
+
             /// update contact emal and phones when supplier email or phones are updated
             $this->updateContact($this->views[$this->active]->model);
         }
@@ -225,11 +227,11 @@ class EditProveedor extends ComercialContactController
      *
      * @param string $viewName
      */
-    protected function setCustomWidgetValues($viewName)
+    protected function setCustomWidgetValues(string $viewName)
     {
         /// Load values option to VAT Type select input
         $columnVATType = $this->views[$viewName]->columnForName('vat-regime');
-        if ($columnVATType) {
+        if ($columnVATType && $columnVATType->widget->getType() === 'select') {
             $columnVATType->widget->setValuesFromArrayKeys(RegimenIVA::all());
         }
 
@@ -246,7 +248,7 @@ class EditProveedor extends ComercialContactController
 
         /// Load values option to default contact
         $columnBilling = $this->views[$viewName]->columnForName('contact');
-        if ($columnBilling) {
+        if ($columnBilling && $columnBilling->widget->getType() === 'select') {
             $columnBilling->widget->setValuesFromCodeModel($contacts);
         }
     }
