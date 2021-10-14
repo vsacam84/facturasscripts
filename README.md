@@ -7,6 +7,7 @@ Open source ERP software. Built on modern PHP and bootstrap 4. Easy and powerful
 ## Install
 Clone and deploy with composer and npm (composer is for PHP dependencies, and npm for JavaScript and CSS):
 ```
+asdasdasd
 git clone https://github.com/NeoRazorX/facturascripts.git
 cd facturascripts
 composer install
