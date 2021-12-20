@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 namespace FacturaScripts\Core\Lib\ExtendedController;
 
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
@@ -46,7 +47,7 @@ abstract class ComercialContactController extends EditController
 
     /**
      * Check that the subaccount length is correct.
-     * 
+     *
      * @param string $code
      */
     protected function checkSubaccountLength(string $code)
@@ -96,10 +97,10 @@ abstract class ComercialContactController extends EditController
         $this->views[$viewName]->addOrderBy(['date'], 'date', 2);
         $this->views[$viewName]->addSearchFields(['addressee', 'body', 'subject']);
 
-        /// disable column
+        // disable column
         $this->views[$viewName]->disableColumn('to');
 
-        /// disable buttons
+        // disable buttons
         $this->setSettings($viewName, 'btnNew', false);
     }
 
@@ -114,15 +115,15 @@ abstract class ComercialContactController extends EditController
     {
         $this->addListView($viewName, $model, $label, 'fas fa-cubes');
 
-        /// sort options
+        // sort options
         $this->views[$viewName]->addOrderBy(['idlinea'], 'code', 2);
         $this->views[$viewName]->addOrderBy(['cantidad'], 'quantity');
         $this->views[$viewName]->addOrderBy(['pvptotal'], 'amount');
 
-        /// search columns
+        // search columns
         $this->views[$viewName]->addSearchFields(['referencia', 'descripcion']);
 
-        /// disable buttons
+        // disable buttons
         $this->setSettings($viewName, 'btnDelete', false);
         $this->setSettings($viewName, 'btnNew', false);
         $this->setSettings($viewName, 'checkBoxes', false);
@@ -134,23 +135,23 @@ abstract class ComercialContactController extends EditController
      * @param string $viewName
      * @param string $model
      * @param string $label
-     * @param array  $fields
+     * @param array $fields
      */
     private function createListView(string $viewName, string $model, string $label, array $fields)
     {
         $this->addListView($viewName, $model, $label, 'fas fa-copy');
 
-        /// sort options
+        // sort options
         $this->views[$viewName]->addOrderBy(['codigo'], 'code');
         $this->views[$viewName]->addOrderBy(['fecha', 'hora'], 'date', 2);
         $this->views[$viewName]->addOrderBy(['numero'], 'number');
         $this->views[$viewName]->addOrderBy([$fields['numfield']], $fields['numtitle']);
         $this->views[$viewName]->addOrderBy(['total'], 'amount');
 
-        /// search columns
-        $this->views[$viewName]->addSearchFields([$fields['numfield'], 'observaciones']);
+        // search columns
+        $this->views[$viewName]->addSearchFields(['codigo', 'observaciones', $fields['numfield']]);
 
-        /// disable columns
+        // disable columns
         $this->views[$viewName]->disableColumn($fields['linkfield'], true);
     }
 
@@ -164,23 +165,23 @@ abstract class ComercialContactController extends EditController
     {
         $this->addListView($viewName, $model, 'receipts', 'fas fa-dollar-sign');
 
-        /// sort options
+        // sort options
         $this->views[$viewName]->addOrderBy(['fecha'], 'date', 2);
         $this->views[$viewName]->addOrderBy(['fechapago'], 'payment-date');
         $this->views[$viewName]->addOrderBy(['vencimiento'], 'expiration');
         $this->views[$viewName]->addOrderBy(['importe'], 'amount');
 
-        /// search columns
+        // search columns
         $this->views[$viewName]->addSearchFields(['codigofactura', 'observaciones']);
 
-        /// add pay button
+        // add pay button
         $this->addButtonPayReceipt($viewName);
 
-        /// disable buttons
+        // disable buttons
         $this->setSettings($viewName, 'btnNew', false);
         $this->setSettings($viewName, 'btnDelete', false);
 
-        /// disable columns
+        // disable columns
         $this->views[$viewName]->disableColumn('customer');
         $this->views[$viewName]->disableColumn('supplier');
     }
@@ -194,16 +195,16 @@ abstract class ComercialContactController extends EditController
     {
         $this->addListView($viewName, 'Subcuenta', 'subaccounts', 'fas fa-book');
 
-        /// sort options
+        // sort options
         $this->views[$viewName]->addOrderBy(['codsubcuenta'], 'code');
         $this->views[$viewName]->addOrderBy(['codejercicio'], 'exercise', 2);
         $this->views[$viewName]->addOrderBy(['descripcion'], 'description');
         $this->views[$viewName]->addOrderBy(['saldo'], 'balance');
 
-        /// search columns
+        // search columns
         $this->views[$viewName]->addSearchFields(['codsubcuenta', 'descripcion']);
 
-        /// disable buttons
+        // disable buttons
         $this->setSettings($viewName, 'btnDelete', false);
         $this->setSettings($viewName, 'btnNew', false);
         $this->setSettings($viewName, 'checkBoxes', false);
@@ -298,7 +299,7 @@ abstract class ComercialContactController extends EditController
     /**
      * Load view data
      *
-     * @param string   $viewName
+     * @param string $viewName
      * @param BaseView $view
      */
     protected function loadData($viewName, $view)
@@ -318,18 +319,19 @@ abstract class ComercialContactController extends EditController
                 $codsubcuenta = $this->getViewModelValue($mainViewName, 'codsubcuenta');
                 $where = [new DataBaseWhere('codsubcuenta', $codsubcuenta)];
                 $view->loadData('', $where);
+                $this->setSettings($viewName, 'active', $view->count > 0);
                 break;
 
             case 'ListEmailSent':
                 $addressee = $this->getViewModelValue($mainViewName, 'email');
                 $where = [new DataBaseWhere('addressee', $addressee)];
                 $view->loadData('', $where);
+                $this->setSettings($viewName, 'active', $view->count > 0);
                 break;
         }
     }
 
     /**
-     *
      * @param Cliente|Proveedor $subject
      */
     protected function updateContact($subject)

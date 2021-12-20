@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view>
+    <columns>     
+        <column name="Tipo Plan" order="180">
+                <widget type="select" fieldname="tipo_plan" required="true">
+                    <values title="Producción">P</values>
+                    <values title="Consumo">C</values>
+                    <values title="Vivienda">V</values>
+                    <values title="Servicios">S</values>
+                    <values title="Organismo de Integración">I</values>
+                    <values title="Organizaciones en Liquidación">L</values>
+                </widget>
+            </column>
+            <column name="Nro Establecimiento " order="190">
+                <widget type="text" fieldname="nro_establecimiento" maxlength="3" required="true"/>
+            </column>
+    </columns>
+</view>
